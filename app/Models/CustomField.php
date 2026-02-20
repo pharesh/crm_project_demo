@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustomField extends Model
 {
     protected $fillable = [
-        'name',
+        'field_name',
         'field_type',
         'is_required'
     ];
