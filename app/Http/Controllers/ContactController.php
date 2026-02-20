@@ -55,16 +55,46 @@ class ContactController extends Controller
     // EDIT
     public function edit($id)
     {
-        $contact = Contact::with('customFieldValues')->find($id);
-        return response()->json($contact);
+        $contact = Contact::with('customFieldValues')->findOrFail($id);
+
+        $customValues = [];
+
+        foreach ($contact->customFieldValues as $value) {
+            $customValues[$value->custom_field_id] = $value->value;
+        }
+
+        return response()->json([
+            'id' => $contact->id,
+            'name' => $contact->name,
+            'email' => $contact->email,
+            'phone' => $contact->phone,
+            'gender' => $contact->gender,
+            'custom_fields' => $customValues
+        ]);
     }
 
     // UPDATE (AJAX)
     public function update(Request $request, $id)
     {
-        $contact = Contact::find($id);
+        $contact = Contact::findOrFail($id);
 
         $contact->update($request->only('name','email','phone','gender'));
+
+        // Update custom fields
+        if($request->custom_fields){
+
+            foreach ($request->custom_fields as $field_id => $value) {
+                ContactCustomFieldValue::updateOrCreate(
+                    [
+                        'contact_id' => $contact->id,
+                        'custom_field_id' => $field_id
+                    ],
+                    [
+                        'value' => $value
+                    ]
+                );
+            }
+        }
 
         return response()->json(['success' => 'Updated Successfully']);
     }

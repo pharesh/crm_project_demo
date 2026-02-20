@@ -114,6 +114,17 @@ function editContact(id){
         $('input[name="email"]').val(data.email);
         $('input[name="phone"]').val(data.phone);
         $('input[name="gender"][value="'+data.gender+'"]').prop('checked', true);
+
+        // CLEAR previous custom values
+        $('input[name^="custom_fields"]').val('');
+
+        // SET custom field values
+        if(data.custom_fields){
+            $.each(data.custom_fields, function(field_id, value){
+                $('input[name="custom_fields['+field_id+']"]').val(value);
+            });
+        }
+
     });
 }
 
