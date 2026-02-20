@@ -13,16 +13,16 @@ class CustomFieldController extends Controller
         return view('custom_fields.index', compact('fields'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         CustomField::create([
             'field_name' => $request->field_name,
-            'field_type' => $request->field_type
+            'field_type' => $request->field_type,
+            'field_options' => $request->field_options
         ]);
 
         return back()->with('success','Custom Field Added');
     }
-
     public function destroy($id)
     {
         CustomField::find($id)->delete();

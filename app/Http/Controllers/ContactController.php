@@ -40,7 +40,13 @@ class ContactController extends Controller
 
         // Save custom fields
         if($request->custom_fields){
+
             foreach ($request->custom_fields as $field_id => $value) {
+
+                if(is_array($value)){
+                    $value = implode(',', $value); // checkbox multiple values
+                }
+
                 ContactCustomFieldValue::create([
                     'contact_id' => $contact->id,
                     'custom_field_id' => $field_id,
@@ -84,6 +90,11 @@ class ContactController extends Controller
         if($request->custom_fields){
 
             foreach ($request->custom_fields as $field_id => $value) {
+
+                if(is_array($value)){
+                    $value = implode(',', $value);
+                }
+
                 ContactCustomFieldValue::updateOrCreate(
                     [
                         'contact_id' => $contact->id,

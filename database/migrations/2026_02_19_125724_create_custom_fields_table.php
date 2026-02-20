@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('field_name');
             $table->string('field_type'); // text, date, number
+            $table->text('field_options')->nullable(); // for dropdown & checkbox
             $table->timestamps();
         });
     }

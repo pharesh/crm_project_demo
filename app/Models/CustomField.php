@@ -10,6 +10,7 @@ class CustomField extends Model
     protected $fillable = [
         'field_name',
         'field_type',
+        'field_options',
         'is_required'
     ];
 

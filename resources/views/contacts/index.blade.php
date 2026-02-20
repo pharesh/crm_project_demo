@@ -31,11 +31,39 @@
 
     {{-- Dynamic Custom Fields --}}
     <h4>Custom Fields</h4>
-    @foreach($customFields as $field)
-        <label>{{ $field->field_name }}</label>
+
+@foreach($customFields as $field)
+
+    <label>{{ $field->field_name }}</label>
+
+    @if($field->field_type == 'text' || $field->field_type == 'date' || $field->field_type == 'number')
+
         <input type="{{ $field->field_type }}"
                name="custom_fields[{{ $field->id }}]">
-    @endforeach
+
+    @elseif($field->field_type == 'select')
+
+        <select name="custom_fields[{{ $field->id }}]">
+            <option value="">Select</option>
+            @foreach(explode(',', $field->field_options) as $option)
+                <option value="{{ trim($option) }}">{{ trim($option) }}</option>
+            @endforeach
+        </select>
+
+    @elseif($field->field_type == 'checkbox')
+
+        @foreach(explode(',', $field->field_options) as $option)
+            <input type="checkbox"
+                   name="custom_fields[{{ $field->id }}][]"
+                   value="{{ trim($option) }}">
+                   {{ trim($option) }}
+        @endforeach
+
+    @endif
+
+    <br>
+
+@endforeach
 
     <br>
     <button type="submit" class="btn btn-save">Save</button>
@@ -120,8 +148,27 @@ function editContact(id){
 
         // SET custom field values
         if(data.custom_fields){
+
             $.each(data.custom_fields, function(field_id, value){
-                $('input[name="custom_fields['+field_id+']"]').val(value);
+
+                let input = $('[name="custom_fields['+field_id+']"]');
+
+                if(input.is('select')){
+                    input.val(value);
+                }
+                else if($('[name="custom_fields['+field_id+'][]"]').length){
+
+                    let values = value.split(',');
+
+                    $.each(values, function(i, val){
+                        $('[name="custom_fields['+field_id+'][]"][value="'+val+'"]')
+                        .prop('checked', true);
+                    });
+                }
+                else{
+                    input.val(value);
+                }
+
             });
         }
 
