@@ -155,7 +155,7 @@ function editContact(id){
         $('input[name^="custom_fields"]').val('');
 
         // SET custom field values
-        if(data.custom_fields){
+        if(data.custom_fields){ 
 
             $.each(data.custom_fields, function(field_id, value){
 
