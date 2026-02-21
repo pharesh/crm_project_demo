@@ -12,7 +12,7 @@ class ContactController extends Controller
     // SHOW LIST PAGE
     public function index()
     {
-        $contacts = Contact::with('customFieldValues')->latest()->get();
+        $contacts = Contact::with('customFieldValues.customField')->latest()->get();
         $customFields = CustomField::all();
         return view('contacts.index', compact('contacts','customFields'));
     }
@@ -132,8 +132,9 @@ class ContactController extends Controller
             $query->where('gender',$request->gender);
 
         $contacts = $query->get();
-
-        return view('contacts.partials.contact_list', compact('contacts'));
+        $customFields = CustomField::all();
+        
+        return view('contacts.partials.contact_list', compact('contacts','customFields'));
     }
 }
 

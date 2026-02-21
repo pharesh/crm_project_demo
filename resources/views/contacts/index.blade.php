@@ -2,87 +2,95 @@
 
 @section('content')
 
-<h3>Add Contact</h3>
+<div class="card">
+    <h3>Add Contact</h3>
 
-<form id="contactForm" enctype="multipart/form-data">
-    @csrf
+    <form id="contactForm" enctype="multipart/form-data">
+        @csrf
+        <input type="hidden" id="contact_id">
 
-    <input type="hidden" id="contact_id">
+        <div class="form-row">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="phone" placeholder="Phone">
+        </div>
 
-    <input type="text" name="name" placeholder="Name" required>
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="text" name="phone" placeholder="Phone">
+        <div class="form-row">
+            <label>Gender:</label>
+            <label><input type="radio" name="gender" value="Male"> Male</label>
+            <label><input type="radio" name="gender" value="Female"> Female</label>
+        </div>
 
-    <br>
+        <div class="form-row">
+            <div>
+                <label>Profile Image</label><br>
+                <input type="file" name="profile_image">
+            </div>
 
-    Gender:
-    <input type="radio" name="gender" value="Male"> Male
-    <input type="radio" name="gender" value="Female"> Female
+            <div>
+                <label>Additional File</label><br>
+                <input type="file" name="additional_file">
+            </div>
+        </div>
 
-    <br>
+        <hr>
 
-    Profile Image:
-    <input type="file" name="profile_image">
+        <h4>Custom Fields</h4>
 
-    Additional File:
-    <input type="file" name="additional_file">
+        <div class="form-row">
+        @foreach($customFields as $field)
 
-    <br>
+            <div>
+                <label>{{ $field->field_name }}</label><br>
 
-    {{-- Dynamic Custom Fields --}}
-    <h4>Custom Fields</h4>
+                @if(in_array($field->field_type, ['text','date','number']))
+                    <input type="{{ $field->field_type }}"
+                           name="custom_fields[{{ $field->id }}]">
 
-@foreach($customFields as $field)
+                @elseif($field->field_type == 'select')
+                    <select name="custom_fields[{{ $field->id }}]">
+                        <option value="">Select</option>
+                        @foreach(explode(',', $field->field_options) as $option)
+                            <option value="{{ trim($option) }}">{{ trim($option) }}</option>
+                        @endforeach
+                    </select>
 
-    <label>{{ $field->field_name }}</label>
+                @elseif($field->field_type == 'checkbox')
+                    @foreach(explode(',', $field->field_options) as $option)
+                        <label>
+                            <input type="checkbox"
+                                   name="custom_fields[{{ $field->id }}][]"
+                                   value="{{ trim($option) }}">
+                            {{ trim($option) }}
+                        </label>
+                    @endforeach
+                @endif
+            </div>
 
-    @if($field->field_type == 'text' || $field->field_type == 'date' || $field->field_type == 'number')
-
-        <input type="{{ $field->field_type }}"
-               name="custom_fields[{{ $field->id }}]">
-
-    @elseif($field->field_type == 'select')
-
-        <select name="custom_fields[{{ $field->id }}]">
-            <option value="">Select</option>
-            @foreach(explode(',', $field->field_options) as $option)
-                <option value="{{ trim($option) }}">{{ trim($option) }}</option>
-            @endforeach
-        </select>
-
-    @elseif($field->field_type == 'checkbox')
-
-        @foreach(explode(',', $field->field_options) as $option)
-            <input type="checkbox"
-                   name="custom_fields[{{ $field->id }}][]"
-                   value="{{ trim($option) }}">
-                   {{ trim($option) }}
         @endforeach
+        </div>
 
-    @endif
+        <br>
+        <button type="submit" class="btn btn-save">Save</button>
+    </form>
+</div>
 
-    <br>
+<div class="card">
+    <h3>Filter</h3>
 
-@endforeach
+    <form id="filterForm">
+        <div class="form-row">
+            <input type="text" name="name" placeholder="Search Name">
+            <input type="text" name="email" placeholder="Search Email">
 
-    <br>
-    <button type="submit" class="btn btn-save">Save</button>
-</form>
-
-<hr>
-
-<h3>Filter</h3>
-
-<form id="filterForm">
-    <input type="text" name="name" placeholder="Search Name">
-    <input type="text" name="email" placeholder="Search Email">
-
-    <select name="gender">
-        <option value="">All</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-    </select>
-</form>
+            <select name="gender">
+                <option value="">All Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+    </form>
+</div>
 
 <div id="contactTable">
     @include('contacts.partials.contact_list')
