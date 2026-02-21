@@ -145,16 +145,18 @@ function deleteContact(id){
 // EDIT
 function editContact(id){
     $.get('/contacts/'+id+'/edit', function(data){
+
         $('#contact_id').val(data.id);
         $('input[name="name"]').val(data.name);
         $('input[name="email"]').val(data.email);
         $('input[name="phone"]').val(data.phone);
         $('input[name="gender"][value="'+data.gender+'"]').prop('checked', true);
 
-        // CLEAR previous custom values
-        $('input[name^="custom_fields"]').val('');
+        // ✅ CLEAR properly
+        $('input[name^="custom_fields"]').not(':checkbox').val('');
+        $('input[type="checkbox"][name^="custom_fields"]').prop('checked', false);
 
-        // SET custom field values
+        // ✅ SET values
         if(data.custom_fields){ 
 
             $.each(data.custom_fields, function(field_id, value){
@@ -169,11 +171,13 @@ function editContact(id){
                     let values = value.split(',');
 
                     $.each(values, function(i, val){
+                        val = val.trim(); // fix space issue
+
                         $('[name="custom_fields['+field_id+'][]"][value="'+val+'"]')
-                        .prop('checked', true);
+                            .prop('checked', true);
                     });
-                }
-                else{
+
+                } else {
                     input.val(value);
                 }
 
