@@ -27,14 +27,18 @@ class ContactController extends Controller
             'gender' => $request->gender,
         ]);
 
-        // Upload files
-        if ($request->hasFile('profile_image')) {
-            $contact->profile_image = $request->file('profile_image')->store('profiles');
-        }
+       // ✅ Upload Profile Image
+    if ($request->hasFile('profile_image')) {
+        $contact->profile_image = $request->file('profile_image')
+            ->store('profiles', 'public');
+    }
 
-        if ($request->hasFile('additional_file')) {
-            $contact->additional_file = $request->file('additional_file')->store('documents');
-        }
+    // ✅ Upload Additional File
+    if ($request->hasFile('additional_file')) {
+        $contact->additional_file = $request->file('additional_file')
+            ->store('documents', 'public');
+    }
+
 
         $contact->save();
 
@@ -133,7 +137,7 @@ class ContactController extends Controller
 
         $contacts = $query->get();
         $customFields = CustomField::all();
-        
+
         return view('contacts.partials.contact_list', compact('contacts','customFields'));
     }
 }
