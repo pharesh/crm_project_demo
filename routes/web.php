@@ -14,14 +14,16 @@ Route::get('/', function () {
 
 
 // CONTACT ROUTES
+Route::post('/merge-contacts', [ContactController::class, 'merge']);
 Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
 Route::post('/contacts', [ContactController::class, 'store'])->name('contacts.store');
 Route::get('/contacts/{id}/edit', [ContactController::class, 'edit'])->name('contacts.edit');
 Route::post('/contacts/{id}', [ContactController::class, 'update'])->name('contacts.update');
 Route::delete('/contacts/{id}', [ContactController::class, 'destroy'])->name('contacts.delete');
-
+Route::get('/contact-preview', [ContactController::class, 'preview']);
 // AJAX FILTER
 Route::get('/contacts/filter', [ContactController::class, 'filter'])->name('contacts.filter');
+Route::get('/contact/{id}', [ContactController::class, 'show']);
 
 
 // CUSTOM FIELD ROUTES

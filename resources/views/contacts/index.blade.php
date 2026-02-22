@@ -96,14 +96,111 @@
     @include('contacts.partials.contact_list')
 </div>
 
-<script>
 
+<div class="modal fade" id="mergeModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Merge Contacts</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+<div class="modal-body">
+
+    <input type="hidden" id="primary_id">
+
+    <label>Select Contact to Merge With:</label>
+    <select id="secondary_id" class="form-control" onchange="loadPreview()">
+        @foreach($contacts as $c)
+            <option value="{{ $c->id }}">{{ $c->name }}</option>
+        @endforeach
+    </select>
+
+    <hr>
+
+    <div id="mergePreview">
+        <!-- Preview will come here -->
+    </div>
+
+</div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="mergeContacts()">Merge</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
+// let primaryId = null;
 
+function openMergeModal(id) {
+    $('#primary_id').val(id);
+
+    var modal = new bootstrap.Modal(document.getElementById('mergeModal'));
+    modal.show();
+
+    setTimeout(loadPreview, 300); // load preview automatically
+}
+
+
+function mergeContacts() {
+
+    let primary_id = $('#primary_id').val();
+    let secondary_id = $('#secondary_id').val();
+
+    if (primary_id == secondary_id) {
+        alert("Cannot merge same contact");
+        return;
+    }
+
+    if (!confirm("Are you sure you want to merge?")) return;
+
+    $.ajax({
+        url: "/merge-contacts",
+        method: "POST",
+        data: {
+            _token: '{{ csrf_token() }}',
+            primary_id: primary_id,
+            secondary_id: secondary_id
+        },
+        success: function(res) {
+            alert(res.success);
+
+            // Close modal
+            $('#mergeModal').modal('hide');
+
+           loadContacts();// refresh list
+        },
+        error: function() {
+            alert("Merge failed");
+        }
+    });
+}
+
+function loadPreview() {
+
+    let primary_id = $('#primary_id').val();
+    let secondary_id = $('#secondary_id').val();
+
+    $.ajax({
+        url: "/contact-preview",
+        method: "GET",
+        data: {
+            primary_id: primary_id,
+            secondary_id: secondary_id
+        },
+        success: function(data) {
+            $('#mergePreview').html(data);
+        }
+    });
+}
 // INSERT / UPDATE
 $('#contactForm').submit(function(e){
     e.preventDefault();

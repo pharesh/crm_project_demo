@@ -13,7 +13,9 @@ class Contact extends Model
         'phone',
         'gender',
         'profile_image',
-        'additional_file'
+        'additional_file',
+        'is_merged',
+        'merged_into'
     ];
 
     public function customFieldValues()

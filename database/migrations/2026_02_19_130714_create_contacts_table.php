@@ -19,6 +19,8 @@ return new class extends Migration
             $table->enum('gender', ['Male', 'Female']);
             $table->string('profile_image')->nullable();
             $table->string('additional_file')->nullable();
+            $table->boolean('is_merged')->default(0);
+            $table->unsignedBigInteger('merged_into')->nullable();
             $table->timestamps();
         });
     }
